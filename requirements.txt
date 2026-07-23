@@ -1,4 +1,12 @@
-Django>=4.2,<5.0
-python-decouple>=3.8
-whitenoise>=6.6
-Pillow>=10.0
+asgiref==3.12.1
+Django
+iniconfig==2.3.0
+packaging==26.2
+Pillow
+pluggy==1.6.0
+Pygments==2.20.0
+pytest==9.1.1
+python-decouple==3.8
+sqlparse==0.5.5
+tzdata==2026.3
+whitenoise==6.12.0
