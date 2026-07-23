@@ -5,7 +5,7 @@ small Zimbabwean businesses. No cart/checkout/payment gateway in the
 database sense - customers build an order in the browser and it becomes a
 single pre-filled WhatsApp message. Built to be cloned per business by
 editing `.env` and one `BakeryInfo` row in `/admin/`.
-
+by Phyb
 ## Features
 
 - Mobile-first menu with HTMX category filtering + search (no full reloads)
