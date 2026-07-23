@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Menu - {{ bakery.name|default:"Bakery" }}{% endblock %}
+
+{% block extra_head %}
+  {# HTMX only loaded on the menu page, where it's actually used, to keep #}
+  {# every other page's payload as small as possible on slow connections. #}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}
+
+{% block content %}
+  <form class="filter-bar"
+        hx-get="{% url 'products:menu' %}"
+        hx-target="#product-grid-wrapper"
+        hx-trigger="input changed delay:400ms from:input[type=search]"
+        hx-push-url="true">
+
+    <input type="search" name="q" placeholder="Search the menu..."
+           value="{{ query }}" aria-label="Search products">
+  </form>
+
+  <div class="filter-bar">
+    <a class="cat-btn {% if not active_category %}active{% endif %}"
+       href="{% url 'products:menu' %}"
+       hx-get="{% url 'products:menu' %}"
+       hx-target="#product-grid-wrapper"
+       hx-push-url="true">All</a>
+
+    {% for category in categories %}
+      <a class="cat-btn {% if active_category == category.slug %}active{% endif %}"
+         href="{% url 'products:menu' %}?category={{ category.slug }}"
+         hx-get="{% url 'products:menu' %}?category={{ category.slug }}"
+         hx-target="#product-grid-wrapper"
+         hx-push-url="true">{{ category.name }}</a>
+    {% endfor %}
+  </div>
+
+  <div id="product-grid-wrapper">
+    {% include "products/_product_grid.html" %}
+  </div>
+{% endblock %}

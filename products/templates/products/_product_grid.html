@@ -1,0 +1,29 @@
+{% load static %}
+{# HTMX-swappable fragment: category filter + search both target this block. #}
+<div class="product-grid">
+  {% for product in products %}
+    <div class="product-card">
+      <a href="{% url 'products:detail' product.slug %}">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+        <h3>{{ product.name }}</h3>
+        <div class="price">${{ product.price }}</div>
+      </a>
+
+      <div class="qty-picker" data-product-id="{{ product.id }}">
+        <button type="button" onclick="adjustPickerQty('{{ product.id }}', -1)" aria-label="Decrease quantity">-</button>
+        <span class="qty-value" id="qty-{{ product.id }}">1</span>
+        <button type="button" onclick="adjustPickerQty('{{ product.id }}', 1)" aria-label="Increase quantity">+</button>
+      </div>
+
+      <button
+        type="button"
+        class="add-to-cart-btn"
+        onclick="addToCart('{{ product.id }}', '{{ product.name|escapejs }}', {{ product.price }}, getPickerQty('{{ product.id }}'))"
+      >
+        Add to cart
+      </button>
+    </div>
+  {% empty %}
+    <p class="cart-empty">No products match that search yet.</p>
+  {% endfor %}
+</div>

@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+  <section class="hero">
+    <h1>{{ bakery.name|default:"Welcome" }}</h1>
+    {% if bakery %}<p>{{ bakery.location }}</p>{% endif %}
+    <p><a href="{% url 'products:menu' %}" class="whatsapp-btn" style="background:var(--pastry-orange)">
+      View Menu
+    </a></p>
+  </section>
+
+  {% if featured_products %}
+    <h2>Featured</h2>
+    <div class="product-grid">
+      {% for product in featured_products %}
+        <a class="product-card" href="{% url 'products:detail' product.slug %}">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+          <h3>{{ product.name }}</h3>
+          <div class="price">${{ product.price }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if bakery %}
+    <section class="about">
+      <h2>About {{ bakery.name }}</h2>
+      <p>{{ bakery.address }}</p>
+      <p>{{ bakery.opening_hours|linebreaksbr }}</p>
+    </section>
+  {% endif %}
+{% endblock %}

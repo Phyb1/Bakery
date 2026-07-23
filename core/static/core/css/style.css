@@ -1,0 +1,285 @@
+/*
+  Custom, mobile-first CSS. No framework (no Bootstrap/Tailwind build step)
+  by design - keeps the payload under a few KB for 2G/3G Zimbabwean
+  networks. Brand color comes from --pastry-orange, set inline in base.html
+  from {{ bakery.brand_color }} so each business can rebrand with 1 field.
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --pastry-cream: #fff8f0;
+  --pastry-brown: #5b3a1e;
+  --pastry-border: #e5d3b3;
+  --pastry-red: #dc2626;
+  --pastry-orange: #d97706; /* overridden inline per-business */
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--pastry-cream);
+  color: var(--pastry-brown);
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+a {
+  color: var(--pastry-orange);
+}
+
+header.site-header {
+  background: #fff;
+  border-bottom: 2px solid var(--pastry-orange);
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+  color: var(--pastry-orange);
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.cart-btn {
+  background: var(--pastry-orange);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.banner-closed {
+  background: var(--pastry-red);
+  color: #fff;
+  text-align: center;
+  padding: 8px;
+  font-size: 14px;
+}
+
+main {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* --- Menu filter/search bar --- */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.filter-bar input[type="search"] {
+  flex: 1 1 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--pastry-border);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.filter-bar .cat-btn {
+  border: 1px solid var(--pastry-border);
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--pastry-brown);
+  text-decoration: none;
+}
+
+.filter-bar .cat-btn.active {
+  background: var(--pastry-orange);
+  color: #fff;
+  border-color: var(--pastry-orange);
+}
+
+/* --- Product grid --- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid var(--pastry-border);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+
+.product-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--pastry-border);
+}
+
+.product-card h3 {
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+
+.product-card .price {
+  font-weight: 700;
+  color: var(--pastry-orange);
+}
+
+.sold-out-badge {
+  display: inline-block;
+  background: #999;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 4px;
+}
+
+/* --- Quantity picker (v2.1) --- */
+.qty-picker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.qty-picker button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--pastry-brown);
+  background: #fff;
+  border-radius: 6px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.qty-picker .qty-value {
+  min-width: 20px;
+  text-align: center;
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  background: var(--pastry-orange);
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* --- Product detail --- */
+.product-detail img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.whatsapp-btn {
+  display: inline-block;
+  background: #25d366;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* --- Cart modal (v2.3) --- */
+.cart-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
+}
+
+.cart-modal-backdrop.open {
+  display: block;
+}
+
+.cart-modal {
+  background: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.cart-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--pastry-border);
+  font-size: 0.9rem;
+}
+
+.cart-empty {
+  color: #888;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.cart-total {
+  font-weight: 700;
+  margin-top: 10px;
+  text-align: right;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.btn-checkout {
+  background: #25d366;
+  color: #fff;
+}
+
+.btn-close {
+  background: #eee;
+  color: var(--pastry-brown);
+}
+
+footer.site-footer {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 14px;
+  border-top: 2px solid var(--pastry-orange);
+  margin-top: 20px;
+}
+
+/* Small phones: single column */
+@media (max-width: 360px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

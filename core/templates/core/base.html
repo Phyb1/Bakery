@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ bakery.name|default:"Bakery" }}{% endblock %}</title>
+  <meta name="description"
+        content="Order fresh {{ bakery.name|default:"baked goods" }} in {{ bakery.location }} via WhatsApp.">
+
+  <!-- v2.4: PWA - lets customers "Add to Home Screen" -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="{{ bakery.brand_color|default:'#d97706' }}">
+
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+  {% if bakery %}
+  <style>
+    /* Per-business brand color override - the only per-deploy CSS tweak. */
+    :root { --pastry-orange: {{ bakery.brand_color }}; }
+  </style>
+  {% endif %}
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if bakery and not bakery.is_open_now %}
+  <div class="banner-closed">
+    We're currently closed, but you can still send your order on WhatsApp -
+    we'll see it when we open.
+  </div>
+{% endif %}
+
+<header class="site-header">
+  <a href="{% url 'pages:home' %}" class="logo">{{ bakery.name|default:"Bakery" }}</a>
+  <button class="cart-btn" onclick="openCart()" type="button">
+    Cart (<span id="cart-count">0</span>)
+  </button>
+</header>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  {% if bakery %}
+    <p>{{ bakery.address }}</p>
+    <p><a href="{{ bakery.get_whatsapp_link }}">WhatsApp: {{ bakery.whatsapp_number }}</a></p>
+    <p>{{ bakery.opening_hours|linebreaksbr }}</p>
+  {% else %}
+    <p>Bakery info not set up yet - add it in /admin/.</p>
+  {% endif %}
+</footer>
+
+<!-- v2.3: Multi-item WhatsApp cart modal -->
+<div id="cart-modal" class="cart-modal-backdrop">
+  <div class="cart-modal">
+    <h3>Your Order</h3>
+    <div id="cart-items"></div>
+    <div class="modal-actions">
+      {% if bakery %}
+        <button class="btn-checkout" type="button"
+                onclick="checkoutWhatsApp('{{ bakery.clean_whatsapp }}')">
+          Send to WhatsApp
+        </button>
+      {% endif %}
+      <button class="btn-close" type="button" onclick="closeCart()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'core/js/cart.js' %}"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("{% static 'core/js/sw.js' %}");
+  }
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
