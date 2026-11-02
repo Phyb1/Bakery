@@ -132,9 +132,23 @@ class BakeryInfo(models.Model):
             return True
 
         now = timezone.localtime()
-        today = _WEEKDAY_ORDER[now.weekday()]
-        if today not in hours_map:
-            return False
+        today_idx = now.weekday()
+        today = _WEEKDAY_ORDER[today_idx]
+        current_time = now.time()
 
-        open_time, close_time = hours_map[today]
-        return open_time <= now.time() <= close_time
+        # Normal same-day schedule.
+        if today in hours_map:
+            open_time, close_time = hours_map[today]
+            if open_time <= close_time and open_time <= current_time <= close_time:
+                return True
+            # Overnight schedule, e.g. Fri: 18:00-02:00.
+            if open_time > close_time and current_time >= open_time:
+                return True
+
+        # If yesterday's schedule crosses midnight, its late hours remain open.
+        yesterday = _WEEKDAY_ORDER[(today_idx - 1) % 7]
+        if yesterday in hours_map:
+            open_time, close_time = hours_map[yesterday]
+            if open_time > close_time and current_time <= close_time:
+                return True
+        return False

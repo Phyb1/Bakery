@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+{% block title %}Frequently Asked Questions | {{ bakery.name|default:"Bakery" }}{% endblock %}
+{% block content %}
+<section class="page-intro"><span class="eyebrow">Need a hand?</span><h1>Frequently asked questions</h1><p>Everything you need to know before placing your order.</p><a class="primary-btn" href="{% url 'products:menu' %}">Browse the menu →</a></section>
+<div class="faq-list">
+<details><summary>How do I place an order?</summary><p>Browse the menu, choose quantities and add each item to your cart. Open your cart, enter your contact and delivery details, then send the complete order through WhatsApp. We'll reply to confirm it.</p></details>
+<details><summary>Can I order more than one product?</summary><p>Yes. Add as many different products as you like. Your cart keeps them together so you can send one combined order.</p></details>
+<details><summary>Is my order confirmed when I send WhatsApp?</summary><p>Not yet. Sending your order is a request. Wait for our reply confirming availability, final price, payment and collection or delivery arrangements.</p></details>
+<details><summary>Do you deliver?</summary><p>Delivery availability, delivery fees and estimated times depend on your location and the order. Include your address in the order and we'll confirm the details before payment.</p></details>
+<details><summary>Can I collect my order?</summary><p>Ask us on WhatsApp to confirm the collection location and when your order will be ready.</p></details>
+<details><summary>Which payment methods do you accept?</summary><p>Payment options are confirmed directly with the bakery when your order is reviewed. Please don't treat an order as paid until the bakery confirms receipt.</p></details>
+<details><summary>What if a product is unavailable?</summary><p>We'll let you know and discuss an alternative or adjust the order before you pay.</p></details>
+<details><summary>Can I request a custom cake or a large order?</summary><p>Yes, message us with the occasion, size, flavour, design, quantity and date you need it. Please allow time for custom orders and wait for confirmation.</p></details>
+<details><summary>How do I know whether you're open?</summary><p>The site displays a closed banner when the configured opening hours say we're closed. You can still send a message; we'll respond when available.</p></details>
+<details><summary>How do I change or cancel an order?</summary><p>Contact us as soon as possible on WhatsApp and include your order details. Changes depend on whether preparation has started.</p></details>
+<details><summary>What about allergies or ingredients?</summary><p>Please contact us before ordering if you have allergies or dietary requirements. We'll confirm ingredient information with you.</p></details>
+</div>
+{% endblock %}

@@ -9,6 +9,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "order", "product_count")
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("order", "name")
+    class Media:
+        css = {"all": ("core/css/admin-branding.css",)}
 
     @admin.display(description="Products")
     def product_count(self, obj):
@@ -24,6 +26,8 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("category", "name")
     list_per_page = 50
+    class Media:
+        css = {"all": ("core/css/admin-branding.css",)}
 
     @admin.display(description="Photo")
     def thumbnail(self, obj):
@@ -33,3 +37,25 @@ class ProductAdmin(admin.ModelAdmin):
                 obj.image.url,
             )
         return "-"
+
+
+from .models import Order, OrderItem
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    can_delete = False
+    readonly_fields = ("product", "product_name", "unit_price", "quantity", "line_total")
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ("reference", "customer_name", "customer_phone", "order_type", "total", "status", "payment_status", "created_at")
+    list_filter = ("status", "payment_status", "order_type", "created_at")
+    search_fields = ("reference", "customer_name", "customer_phone")
+    readonly_fields = ("reference", "currency", "subtotal", "delivery_fee", "total", "created_at", "updated_at")
+    inlines = [OrderItemInline]
+    list_per_page = 50
+    class Media:
+        css = {"all": ("core/css/admin-branding.css",)}

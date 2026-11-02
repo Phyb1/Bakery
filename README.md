@@ -143,3 +143,26 @@ recognised, returning 400 is the correct, secure behaviour.
 
 No template or Python code should need editing - every business-specific
 value lives in `.env` and the `BakeryInfo` row.
+
+
+## Customer ordering journey
+Browse Menu → choose quantities → add items to cart → enter contact and delivery/collection details → send one combined WhatsApp request → bakery confirms stock, delivery fee, payment method and timing. A WhatsApp message is an order request, not a payment confirmation. Direct online payments require a payment provider and merchant credentials.
+
+## Product images
+Upload a product photo through Admin → Products. Missing photos use a bakery placeholder rather than breaking the page. Ensure at least one product is marked Available; homepage featured items must also be marked Featured.
+
+## Opening hours
+Configure one rule per line in Bakery Info, e.g. `Mon-Fri: 07:00-18:00` and `Sat-Sun: 08:00-16:00`. Overnight ranges such as `Fri: 18:00-02:00` are supported.
+
+## Order processing (manual WhatsApp payment)
+
+Orders are now recorded server-side before the customer is sent to WhatsApp. Apply migrations after deploying:
+
+```bash
+python manage.py migrate
+python manage.py test products
+```
+
+Use **Admin → Orders** to review customer details, line-item price snapshots, order status, and payment status. A new order starts as **Pending confirmation** and **Unpaid / not yet discussed**. Only mark it **Paid** after staff independently verifies that the payment reached the bakery account. A customer WhatsApp message or screenshot alone is not automatic verification.
+
+Checkout totals are calculated from the database; browser localStorage is only a convenient cart interface. Delivery fees remain $0 until the bakery defines a fee policy. Confirm the final delivery fee and total with the customer over WhatsApp before accepting payment.

@@ -17,7 +17,7 @@
  *   checkoutWhatsApp(whatsappNumberDigitsOnly)
  */
 
-const CART_STORAGE_KEY = "samwa_cart";
+const CART_STORAGE_KEY = "bakery_cart_v3";
 
 /** @returns {Array<{id:string, name:string, price:number, qty:number}>} */
 function getCart() {
@@ -120,8 +120,8 @@ function renderCartItems() {
       const lineTotal = (item.price * item.qty).toFixed(2);
       return `
         <div class="cart-line">
-          <span>${item.qty}x ${escapeHtml(item.name)}</span>
-          <span>$${lineTotal}</span>
+          <span>${item.qty} × ${escapeHtml(item.name)}<small>$${Number(item.price).toFixed(2)} each</small></span>
+          <span>$${lineTotal}<button type="button" class="remove-line" onclick="removeFromCart('${String(item.id).replace(/'/g, "")}')" aria-label="Remove ${escapeHtml(item.name)}">Remove</button></span>
         </div>`;
     })
     .join("");
@@ -157,29 +157,49 @@ function closeCart() {
  * @param {string} whatsappNumber - digits only (no '+'), e.g. from
  *   {{ bakery.clean_whatsapp }} in the template.
  */
-function checkoutWhatsApp(whatsappNumber) {
+async function checkoutWhatsAppForm(event, whatsappNumber) {
+  event.preventDefault();
   const cart = getCart();
-  if (cart.length === 0) {
-    alert("Your cart is empty. Add something from the menu first.");
-    return;
+  if (!cart.length) { alert("Your cart is empty. Add something from the menu first."); return false; }
+  const name = document.getElementById("customer-name").value.trim();
+  const phone = document.getElementById("customer-phone").value.trim();
+  const orderType = document.getElementById("order-type").value.toLowerCase();
+  const address = document.getElementById("customer-address").value.trim();
+  const notes = document.getElementById("customer-notes").value.trim();
+  if (!name || !phone) { alert("Please enter your name and phone number."); return false; }
+  if (orderType === "delivery" && !address) {
+    alert("Please enter your delivery address, including a nearby landmark.");
+    document.getElementById("customer-address").focus(); return false;
   }
+  if (!whatsappNumber) { alert("The bakery WhatsApp number is not configured. Please contact the bakery directly."); return false; }
 
-  let message = "Hi! I'd like to order:\n\n";
-  cart.forEach((item) => {
-    const lineTotal = (item.price * item.qty).toFixed(2);
-    message += `${item.qty}x ${item.name} = $${lineTotal}\n`;
-  });
-  message += `\nTotal: $${cartTotal(cart).toFixed(2)}`;
-
-  const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-  window.open(url, "_blank");
-
-  localStorage.removeItem(CART_STORAGE_KEY);
-  renderCartCount();
-  renderCartItems();
-  closeCart();
+  // Open a blank tab synchronously to avoid popup blockers while the server saves the order.
+  const whatsappWindow = window.open("about:blank", "_blank");
+  const submit = document.querySelector("#checkout-details button[type='submit']");
+  if (submit) { submit.disabled = true; submit.textContent = "Saving order…"; }
+  try {
+    const csrf = document.querySelector("#checkout-details input[name='csrfmiddlewaretoken']")?.value || "";
+    const response = await fetch("/menu/orders/create/", {
+      method: "POST", credentials: "same-origin",
+      headers: {"Content-Type": "application/json", "X-CSRFToken": csrf},
+      body: JSON.stringify({name, phone, order_type: orderType, address, notes,
+        items: cart.map(item => ({id: item.id, qty: item.qty}))})
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Could not save your order. Please try again.");
+    if (whatsappWindow) whatsappWindow.location = data.whatsapp_url;
+    else window.location.href = data.whatsapp_url;
+    localStorage.removeItem(CART_STORAGE_KEY);
+    renderCartCount(); renderCartItems(); closeCart();
+  } catch (error) {
+    if (whatsappWindow) whatsappWindow.close();
+    alert(error.message || "Unable to submit order. Please check your connection and try again.");
+  } finally {
+    if (submit) { submit.disabled = false; submit.textContent = "Send order on WhatsApp"; }
+  }
+  return false;
 }
 
 // Populate the cart badge as soon as the script loads (e.g. after a
 // page reload with items already in localStorage from a previous visit).
-document.addEventListener("DOMContentLoaded", renderCartCount);
+document.addEventListener("DOMContentLoaded", () => { renderCartCount(); renderCartItems(); });
